@@ -50,7 +50,7 @@ public class CondutorController {
 //        }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody  @Valid CondutorDTOS condutorDTOS){
         Condutor condutor = new Condutor();
         BeanUtils.copyProperties(condutorDTOS,condutor);

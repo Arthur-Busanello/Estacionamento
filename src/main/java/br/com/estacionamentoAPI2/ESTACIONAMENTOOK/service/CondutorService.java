@@ -55,8 +55,8 @@ public class CondutorService {
 
             try {
                 condutor.setAtivo(true);
-                condutor.setTempoPago(LocalDateTime.from(LocalTime.of(0, 0)));
-                condutor.setTempoDesconto(LocalDateTime.from(LocalTime.of(0,0 )));
+                condutor.setTempoPago(LocalTime.of(0, 0));
+                condutor.setTempoDesconto(LocalTime.of(0, 0));
                 condutorRepository.save(condutor);
                 TransactionAspectSupport.currentTransactionStatus().flush();
                 return ResponseEntity.status(HttpStatus.CREATED).body(condutor);

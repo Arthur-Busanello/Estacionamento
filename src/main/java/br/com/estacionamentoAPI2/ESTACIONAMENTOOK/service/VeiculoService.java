@@ -2,7 +2,9 @@ package br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service;
 
 
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Marca;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Modelo;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Veiculo;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.ModeloRepository;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.VeiculoRepository;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.MarcaDTOS;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.VeiculoDTOS;
@@ -26,11 +28,14 @@ public class VeiculoService {
     public void VeiculoRepository(VeiculoRepository veiculoRepository) {
         this.veiculoRepository = veiculoRepository;
     }
+    @Autowired
+private ModeloRepository modeloRepository;
 
     @Transactional(rollbackFor = Exception.class)
     public void cadastrar(final Veiculo veiculo) {
 
     }
+
     public ResponseEntity<?> findById(Long id) {
         final Veiculo veiculo = this.veiculoRepository.findById(id).orElse(null);
         return veiculo == null
@@ -45,6 +50,8 @@ public class VeiculoService {
     @Transactional
     public ResponseEntity<?> create(VeiculoDTOS veiculoDTOS) {
         Veiculo veiculo = new Veiculo();
+        Modelo modelo = modeloRepository.getById(veiculoDTOS.getModelo());
+        veiculo.setModelo(modelo);
         BeanUtils.copyProperties(veiculoDTOS, veiculo);
         try {
             veiculo.setAtivo(true);
