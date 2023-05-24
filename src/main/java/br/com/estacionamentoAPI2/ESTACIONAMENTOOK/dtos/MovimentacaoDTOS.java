@@ -19,9 +19,9 @@ public class MovimentacaoDTOS {
     private VeiculoRepository veiculoRepository;
     @Autowired
     private CondutorRepository condutorRepository;
-    @NotBlank(message = "veiculo_id nao pode ser inexistente")
+    @NotBlank(message = "veiculo nao pode ser inexistente")
     private Veiculo veiculo;
-    @NotBlank(message = "condutor_id nao pode ser inexistente")
+    @NotBlank(message = "condutor nao pode ser inexistente")
 
     private Condutor condutor ;
     @NotBlank(message = "entrada nao pode ser inexistente")
@@ -38,9 +38,9 @@ public class MovimentacaoDTOS {
     private BigDecimal valorHoraMulta;
 
 
-    public MovimentacaoDTOS(CondutorRepository condutor_idRepository, VeiculoRepository veiculo_idRepository, Long veiculo_id, Long condutor_id, LocalDateTime entrada, LocalDateTime saida, LocalTime tempo, LocalTime tempoDesconto, LocalTime tempoMulta, BigDecimal valorDesconto, BigDecimal valorMulta, BigDecimal valorTotal, BigDecimal valorHora, BigDecimal valorHoraMulta) {
-        this.veiculo = veiculo_idRepository.getReferenceById(veiculo_id);
-        this.condutor = condutorRepository.getById(condutor_id);
+    public MovimentacaoDTOS(CondutorRepository condutorRepository, VeiculoRepository veiculoRepository, Long veiculo, Long condutor, LocalDateTime entrada, LocalDateTime saida, LocalTime tempo, LocalTime tempoDesconto, LocalTime tempoMulta, BigDecimal valorDesconto, BigDecimal valorMulta, BigDecimal valorTotal, BigDecimal valorHora, BigDecimal valorHoraMulta) {
+        this.veiculo = veiculoRepository.getReferenceById(veiculo);
+        this.condutor = condutorRepository.getById(condutor);
         this.entrada = entrada;
         this.saida = saida;
         this.tempo = tempo;
@@ -58,8 +58,8 @@ public class MovimentacaoDTOS {
         return veiculo;
     }
 
-    public Veiculo setVeiculo(Long veiculo_id) {
-        this.veiculo = veiculoRepository.getById(veiculo_id);
+    public Veiculo setVeiculo(Long veiculo) {
+        this.veiculo = veiculoRepository.getById(veiculo);
         return (this.veiculo);
     }
 
@@ -67,8 +67,8 @@ public class MovimentacaoDTOS {
         return this.condutor;
     }
 
-    public void setCondutor(Long condutor_id) {
-        this.condutor = condutorRepository.getById(condutor_id);
+    public void setCondutor(Long condutor) {
+        this.condutor = condutorRepository.getById(condutor);
     }
 
     public LocalDateTime getEntrada() {

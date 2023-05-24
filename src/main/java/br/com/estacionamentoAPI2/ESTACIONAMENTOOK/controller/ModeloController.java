@@ -98,9 +98,8 @@ public class ModeloController {
     }
 
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(
-            @RequestParam("id") final Long id
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable long id
     ){
         return modeloService.delete(id);
     }

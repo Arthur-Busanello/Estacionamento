@@ -44,7 +44,7 @@ public class MovimentacaoController {
 //        return ResponseEntity.ok(this.movimentacaoRepository.findAll());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody  @Valid MovimentacaoDTOS movimentacaoDTOS){
 
         return movimentacaoService.create(movimentacaoDTOS);
@@ -86,7 +86,7 @@ public class MovimentacaoController {
 
     @DeleteMapping
     public ResponseEntity<?> delete(
-            @RequestParam("id") final Long id
+            @PathVariable Long id
     ){
         return movimentacaoService.delete(id);
 //        final Movimentacao movimentacao1 = this.movimentacaoRepository.findById(id).orElse(null);

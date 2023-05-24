@@ -14,10 +14,14 @@ import java.util.List;
 @Repository
 public interface VeiculoRepository  extends JpaRepository<Veiculo, Long> {
     @Modifying
-    List<Veiculo> findByPlaca(String placa);
+    @Query("SELECT c FROM Veiculo c WHERE c.placa = :placa")
+    List<Veiculo> findByPlaca(@Param("placa") String placa);
+
+//    List<Veiculo> findByPlaca(String placa);
     List<Veiculo> findByModelo(Modelo modelo);
     List<Veiculo> findByCor(Cor cor);
     List<Veiculo> findByTipo(Tipo tipo);
+
 
 
 

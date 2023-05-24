@@ -66,8 +66,8 @@ public class MovimentacaoService {
 
         try {
             Movimentacao movimentacao1 = new Movimentacao();
-//            Condutor condutor1 = optionalCondutor.get();
-//            Veiculo veiculo1 = optionalVeiculo.get();
+//            Condutor condutor1 = optionalCondutor.getId();
+//            Veiculo veiculo1 =optionalVeiculo.getId();
             BeanUtils.copyProperties(movimentacaoDTOS, movimentacao1);
             movimentacao1.setAtivo(true);
 //            movimentacao1.setCondutor(condutor1);

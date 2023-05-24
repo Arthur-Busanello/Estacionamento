@@ -56,9 +56,9 @@ public class VeiculoController {
     }
 
 
-    @DeleteMapping
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(
-            @RequestParam("id") final Long id
+            @PathVariable Long id
     ){
         return veiculoService.delete(id);
 //        final Veiculo veiculo1 = this.veiculoRepository.findById(id).orElse(null);

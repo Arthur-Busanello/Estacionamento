@@ -73,9 +73,9 @@ public class CondutorController {
     }
 
 
-    @DeleteMapping
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(
-            @RequestParam("id") final Long id
+            @PathVariable Long id
     ){
         return condutorService.delete(id);
 //        final Condutor condutor1 = this.condutorRepository.findById(id).orElse(null);
