@@ -4,7 +4,11 @@ import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Condutor;
 
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.CondutorRepository;
 
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.CondutorDTOS;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service.CondutorService;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service.VeiculoService;
+import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -47,15 +51,19 @@ public class CondutorController {
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody  final Condutor condutor){
-        return condutorService.save(condutor);
+    public ResponseEntity<?> create(@RequestBody  @Valid CondutorDTOS condutorDTOS){
+        Condutor condutor = new Condutor();
+        BeanUtils.copyProperties(condutorDTOS,condutor);
+
+        return condutorService.create(condutor);
+    }
 //        this.condutorRepository.save(condutor);
 //        return ResponseEntity.ok("cadastrado com sucesso.");
-    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable final Long id, @RequestBody final Condutor condutor
+    public ResponseEntity<?> update(@PathVariable  Long id, @RequestBody @Valid CondutorDTOS condutorDTOS
     ) {
-        return condutorService.update(id,condutor);
+        return condutorService.update(id,condutorDTOS);
 //        if (id.equals(condutor.getId())) {
 //            this.condutorRepository.save(condutor);
 //        } else {

@@ -16,7 +16,7 @@ public abstract class AbstractEntity {
     private long id;
 
     @Getter @Setter
-    @Column(name = "cadastro",nullable = false)
+    @Column(name = "cadastro")
     private LocalDateTime cadastro;
     @Getter @Setter
     @Column(name = "atualizacao")

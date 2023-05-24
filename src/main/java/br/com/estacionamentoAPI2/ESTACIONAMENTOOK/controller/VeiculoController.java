@@ -4,7 +4,9 @@ package br.com.estacionamentoAPI2.ESTACIONAMENTOOK.controller;
 
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Veiculo;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.VeiculoRepository;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.VeiculoDTOS;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service.VeiculoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -35,16 +37,16 @@ public class VeiculoController {
 //        return ResponseEntity.ok(this.veiculoRepository.findAll());
     }
 
-    @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody  final Veiculo veiculo){
-        return veiculoService.save(veiculo);
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody  @Valid VeiculoDTOS veiculoDTOS){
+        return veiculoService.create(veiculoDTOS);
 //        this.veiculoRepository.save(veiculo);
 //        return ResponseEntity.ok("cadastrado com sucesso.");
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable final Long id, @RequestBody final Veiculo veiculo
+    public ResponseEntity<?> update(@PathVariable final Long id, @RequestBody final VeiculoDTOS veiculoDTOS
     ) {
-        return veiculoService.update(id,veiculo);
+        return veiculoService.update(id, veiculoDTOS);
 //        if (id.equals(veiculo.getId())) {
 //            this.veiculoRepository.save(veiculo);
 //        } else {

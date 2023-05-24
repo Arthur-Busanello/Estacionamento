@@ -10,6 +10,7 @@ import java.util.List;
 
 
 public interface ModeloRepository extends JpaRepository<Modelo, Long> {
+
     public List<Modelo> findByNome (final String nome);
     @Query("from Modelo where nome like :nome")
     public List<Modelo> findByNomeLike (@Param("nome") final String nome);

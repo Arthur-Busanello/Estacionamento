@@ -3,15 +3,22 @@ package br.com.estacionamentoAPI2.ESTACIONAMENTOOK.controller;
 
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Modelo;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.ModeloRepository;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.controller.exception.DuplicateKeyException;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.ModeloDTOS;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service.ModeloService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -48,21 +55,40 @@ public class ModeloController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @PostMapping
-    public ResponseEntity<String> cadastrar(@RequestBody final Modelo modelo) {
-        return modeloService.save(modelo);
+    @PostMapping("/create")
+    public ResponseEntity<?> create(@RequestBody @Valid ModeloDTOS modeloDTOS) {
+        return modeloService.create(modeloDTOS);
 //        try {
 //            this.modeloRepository.save(modelo);
 //            return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso.");
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar marca.");
 //        }
+
+    }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationException (MethodArgumentNotValidException exception){
+        Map<String,String> errors = new HashMap<>();
+        exception.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldname = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldname, errorMessage);
+        });
+
+        return errors;
+    };
+
+    @ExceptionHandler(br.com.estacionamentoAPI2.ESTACIONAMENTOOK.controller.exception.DuplicateKeyException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<String> handleDuplicateKeyException(DuplicateKeyException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable final Long id, @RequestBody final Modelo modelo
+    public ResponseEntity<?> update(@PathVariable  Long id, @RequestBody @Valid ModeloDTOS modeloDTOS
     ) {
-        return modeloService.update(id, modelo);
+        return modeloService.update(id, modeloDTOS);
 //        if (id.equals(modelo.getId())) {
 //            this.modeloRepository.save(modelo);
 //        } else {

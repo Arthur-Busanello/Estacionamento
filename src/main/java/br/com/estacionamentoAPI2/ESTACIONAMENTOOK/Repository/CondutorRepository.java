@@ -14,5 +14,7 @@ public interface CondutorRepository extends JpaRepository <Condutor, Long> {
     @Query (value = "select * from Condutor where nome like :nome", nativeQuery = true)
     public List<Condutor> findByNomeLikeNative (@Param("nome") final String nome);
 
+    @Query("SELECT c FROM Condutor c WHERE c.cpf = :cpf")
+    List<Condutor> findByCpf(@Param("cpf") String cpf);
     List<Condutor> findByAtivoTrue();
 }

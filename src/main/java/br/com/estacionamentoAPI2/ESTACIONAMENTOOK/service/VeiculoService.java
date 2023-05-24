@@ -1,13 +1,22 @@
 package br.com.estacionamentoAPI2.ESTACIONAMENTOOK.service;
 
 
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Marca;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Veiculo;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.VeiculoRepository;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.MarcaDTOS;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.VeiculoDTOS;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
 
 public class VeiculoService {
@@ -33,23 +42,39 @@ public class VeiculoService {
         return ResponseEntity.ok(this.veiculoRepository.findAll());
     }
 
-    public ResponseEntity<String> save(Veiculo veiculo) {
+    @Transactional
+    public ResponseEntity<?> create(VeiculoDTOS veiculoDTOS) {
+        Veiculo veiculo = new Veiculo();
+        BeanUtils.copyProperties(veiculoDTOS, veiculo);
         try {
-            this.veiculoRepository.save(veiculo);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso.");
+            veiculo.setAtivo(true);
+            veiculoRepository.save(veiculo);
+            TransactionAspectSupport.currentTransactionStatus().flush();
+            return ResponseEntity.status(HttpStatus.CREATED).body(veiculo);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar .");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResponseEntity.badRequest().body(e.getCause().getCause().getLocalizedMessage());
+//        try {
+//            this.veiculoRepository.save(veiculoDTOS);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso.");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar .");
+//        }
         }
     }
-
-    public ResponseEntity<?> update(Long id, Veiculo veiculo) {
-        if (id.equals(veiculo.getId())) {
-            this.veiculoRepository.save(veiculo);
-            return ResponseEntity.ok().body("Registro atualizado com sucesso !!!");
-        } else {
-            return ResponseEntity.badRequest().body("ID não encontrado !");
+        @Transactional
+        public ResponseEntity<?> update(Long id, VeiculoDTOS veiculoDTOS) {
+            Optional<Veiculo> optionalVeiculo = veiculoRepository.findById(id);
+            if (optionalVeiculo.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Veiculo not found with ID: " + id);
+            } else {
+                Veiculo veiculo1 = optionalVeiculo.get();
+                BeanUtils.copyProperties(veiculoDTOS, veiculo1);
+                veiculo1.setAtualizacao(LocalDateTime.now());
+                veiculoRepository.save(veiculo1);
+                return ResponseEntity.ok().body("Veiculo atualizado com sucesso");
+            }
         }
-    }
 
     public ResponseEntity<?> delete(Long id) {
         final Veiculo veiculo = this.veiculoRepository.findById(id).orElse(null);

@@ -4,11 +4,22 @@ import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Condutor;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Entity.Marca;
 import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.Repository.CondutorRepository;
 
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.CondutorDTOS;
+import br.com.estacionamentoAPI2.ESTACIONAMENTOOK.dtos.MarcaDTOS;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class CondutorService {
 
@@ -36,22 +47,43 @@ public class CondutorService {
         return ResponseEntity.ok(this.condutorRepository.findByAtivoTrue());
 
     }
-    public ResponseEntity<String> save(Condutor condutor) {
-        try {
-            this.condutorRepository.save(condutor);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar .");
-        }
-    }
-    public ResponseEntity<?> update(Long id, Condutor condutor) {
-        if (id.equals(condutor.getId())) {
-            this.condutorRepository.save(condutor);
-            return ResponseEntity.ok().body("Registro atualizado com sucesso !!!");
+    @Transactional
+    public ResponseEntity<?> create(Condutor condutor) {
+
+        if ( condutorRepository.findByCpf(condutor.getCpf()).isEmpty() ) {
+
+
+            try {
+                condutor.setAtivo(true);
+                condutor.setTempoPago(LocalDateTime.from(LocalTime.of(0, 0)));
+                condutor.setTempoDesconto(LocalDateTime.from(LocalTime.of(0,0 )));
+                condutorRepository.save(condutor);
+                TransactionAspectSupport.currentTransactionStatus().flush();
+                return ResponseEntity.status(HttpStatus.CREATED).body(condutor);
+            } catch (Exception e) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResponseEntity.badRequest().body(e.toString());
+            }
         } else {
-            return ResponseEntity.badRequest().body("ID não encontrado !");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF ja cadastrado");
         }
     }
+        @Transactional
+        public ResponseEntity<?> update(Long id, CondutorDTOS condutorDTOS) {
+            Optional<Condutor> optionalCondutor = condutorRepository.findById(id);
+            if (optionalCondutor.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Condutor not found with ID: " + id);
+            } else {
+                Condutor condutor1 = optionalCondutor.get();
+                BeanUtils.copyProperties(condutorDTOS, condutor1);
+                condutor1.setAtualizacao(LocalDateTime.now());
+                condutorRepository.save(condutor1);
+                return ResponseEntity.ok().body("Condutor atualizado com sucesso");
+            }
+        }
+
+
+
     public ResponseEntity<?> delete(Long id) {
         final Condutor condutor = this.condutorRepository.findById(id).orElse(null);
         if (condutor == null) {
